@@ -40,6 +40,7 @@ This document provides essential context and instructions for AI agents working 
 
 ## Development Conventions
 
+- **PowerShell Syntax:** Always use `;` instead of `&&` when chaining shell commands in this environment (Win32/PowerShell).
 - **Security First:** Never log or commit plain-text passwords or sensitive user data. User data in `data/users/` is Git-ignored.
 - **Surgical Updates:** When modifying `server.js` or `html/cms.ejs`, ensure that existing functionalities like the "Home" page deletion protection or the first-user-is-admin logic are preserved.
 - **Style:** Adhere to the existing modular CSS architecture. Use CSS variables defined in `base.css` for consistency.
