@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutLi = document.getElementById('logout-li');
         const cmsLi = document.getElementById('cms-li');
         const authLink = document.getElementById('auth-link');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
         if (username) {
             if (authLink) {
@@ -160,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             dynamicLinks.forEach(link => link.classList.add('hidden'));
             if (logoutLi) logoutLi.classList.remove('hidden');
-            if (cmsLi) cmsLi.classList.remove('hidden');
+            if (cmsLi && isAdmin) cmsLi.classList.remove('hidden');
         } else {
             if (authLink) {
                 authLink.textContent = 'Login / Signup';
@@ -177,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutLink.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('user');
+            localStorage.removeItem('isAdmin');
             window.location.href = '/';
         });
     }
@@ -261,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok) {
                     localStorage.setItem('user', data.username);
+                    localStorage.setItem('isAdmin', data.admin);
                     closeAuthModal();
                     updateAuthUI(data.username);
                     window.location.href = '/dashboard';

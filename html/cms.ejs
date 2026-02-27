@@ -57,7 +57,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const user = localStorage.getItem('user');
-            if (!user) {
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            
+            if (!user || !isAdmin) {
                 window.location.href = '/';
                 return;
             }
@@ -67,6 +69,11 @@
             const cmsForm = document.getElementById('cms-form');
             const btnNewPage = document.getElementById('btn-new-page');
             const btnCancel = document.getElementById('btn-cancel-edit');
+
+            const adminHeaders = {
+                'Content-Type': 'application/json',
+                'x-admin-status': 'true'
+            };
 
             async function loadPages() {
                 const res = await fetch('/api/nav');
@@ -110,9 +117,12 @@
                     return;
                 }
                 if (confirm(`Are you sure you want to delete /${slug}?`)) {
-                    await fetch(`/api/pages/${slug}`, { method: 'DELETE' });
+                    await fetch(`/api/pages/${slug}`, { 
+                        method: 'DELETE',
+                        headers: adminHeaders
+                    });
                     loadPages();
-                    initNavigation(); // From script.js
+                    if (typeof initNavigation === 'function') initNavigation();
                 }
             };
 
@@ -146,7 +156,7 @@
 
                 const res = await fetch(url, {
                     method: method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: adminHeaders,
                     body: JSON.stringify(pageData)
                 });
 

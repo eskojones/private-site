@@ -28,6 +28,17 @@ app.use(express.static('html'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'html'));
 
+// --- Authentication Middleware (Mock) ---
+const checkAdmin = (req, res, next) => {
+    const isAdmin = req.headers['x-admin-status'] === 'true';
+    if (!isAdmin) {
+        return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+    next();
+};
+
+// --- API Endpoints ---
+
 // API to get page list for navigation
 app.get('/api/nav', (req, res) => {
     try {
@@ -44,10 +55,6 @@ app.get('/api/nav', (req, res) => {
     }
 });
 
-// Page Routes
-app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Dashboard' }));
-app.get('/cms', (req, res) => res.render('cms', { title: 'CMS Dashboard' }));
-
 // CMS API Endpoints
 app.get('/api/pages/:slug', (req, res) => {
     const slug = req.params.slug;
@@ -60,7 +67,7 @@ app.get('/api/pages/:slug', (req, res) => {
     }
 });
 
-app.post('/api/pages', (req, res) => {
+app.post('/api/pages', checkAdmin, (req, res) => {
     const pageData = req.body;
     const pagePath = path.join(PAGES_DIR, `${pageData.slug}.json`);
     if (fs.existsSync(pagePath)) {
@@ -70,7 +77,7 @@ app.post('/api/pages', (req, res) => {
     res.status(201).json(pageData);
 });
 
-app.put('/api/pages/:oldSlug', (req, res) => {
+app.put('/api/pages/:oldSlug', checkAdmin, (req, res) => {
     const oldSlug = req.params.oldSlug;
     const pageData = req.body;
     const oldPath = path.join(PAGES_DIR, `${oldSlug}.json`);
@@ -90,7 +97,7 @@ app.put('/api/pages/:oldSlug', (req, res) => {
     }
 });
 
-app.delete('/api/pages/:slug', (req, res) => {
+app.delete('/api/pages/:slug', checkAdmin, (req, res) => {
     const slug = req.params.slug;
     if (slug === 'index') return res.status(400).json({ error: 'Cannot delete home page' });
     const pagePath = path.join(PAGES_DIR, `${slug}.json`);
@@ -99,35 +106,6 @@ app.delete('/api/pages/:slug', (req, res) => {
         res.json({ message: 'Page deleted' });
     } else {
         res.status(404).json({ error: 'Page not found' });
-    }
-});
-
-// Dynamic Page Routes
-app.get('/:slug?', (req, res, next) => {
-    const slug = req.params.slug || 'index';
-    
-    // Skip API routes
-    if (slug === 'api' || req.url.startsWith('/api')) return next();
-    // Skip static files (very basic check)
-    if (slug.includes('.')) return next();
-    // Special handling for hardcoded pages
-    if (slug === 'dashboard' || slug === 'cms') return next();
-
-    const pagePath = path.join(PAGES_DIR, `${slug}.json`);
-
-    if (fs.existsSync(pagePath)) {
-        const pageData = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
-        res.render('page', { 
-            title: pageData.title,
-            hero: pageData.hero,
-            content: pageData.content || []
-        });
-    } else {
-        res.status(404).render('page', {
-            title: '404 - Not Found',
-            hero: { title: '404', subtitle: 'Page not found' },
-            content: []
-        });
     }
 });
 
@@ -145,7 +123,7 @@ app.post('/api/signup', (req, res) => {
         return res.status(409).json({ error: 'User already exists' });
     }
 
-    const userData = { username, password }; // Note: In production, password should be hashed
+    const userData = { username, password, admin: false };
     fs.writeFileSync(userFile, JSON.stringify(userData, null, 2));
 
     res.status(201).json({ message: 'User created successfully' });
@@ -171,7 +149,38 @@ app.post('/api/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ message: 'Login successful', username });
+    res.json({ message: 'Login successful', username, admin: userData.admin || false });
+});
+
+// --- Page Routes ---
+
+app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Dashboard' }));
+app.get('/cms', (req, res) => res.render('cms', { title: 'CMS Dashboard' }));
+
+// Dynamic Page Routes
+app.get('/:slug?', (req, res, next) => {
+    const slug = req.params.slug || 'index';
+    
+    if (slug === 'api' || req.url.startsWith('/api')) return next();
+    if (slug.includes('.')) return next();
+    if (slug === 'dashboard' || slug === 'cms') return next();
+
+    const pagePath = path.join(PAGES_DIR, `${slug}.json`);
+
+    if (fs.existsSync(pagePath)) {
+        const pageData = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
+        res.render('page', { 
+            title: pageData.title,
+            hero: pageData.hero,
+            content: pageData.content || []
+        });
+    } else {
+        res.status(404).render('page', {
+            title: '404 - Not Found',
+            hero: { title: '404', subtitle: 'Page not found' },
+            content: []
+        });
+    }
 });
 
 app.listen(PORT, () => {
