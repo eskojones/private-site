@@ -64,11 +64,29 @@ header {
     color: var(--brand-orange);
 }
 
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color var(--transition-speed);
+}
+
+.nav-links a:hover {
+    color: var(--brand-orange);
+}
+
 .menu-container {
     position: relative;
 }
 
 #menu-button {
+    display: none; /* Hidden on desktop */
     background-color: var(--brand-orange);
     color: white;
     border: none;
@@ -76,7 +94,6 @@ header {
     border-radius: 6px;
     font-size: 1rem;
     cursor: pointer;
-    display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity var(--transition-speed);
@@ -210,8 +227,16 @@ header {
     opacity: 0.85;
 }
 
-/* Mobile Responsiveness for Content */
+/* Mobile Responsiveness for Navigation and Content */
 @media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    #menu-button {
+        display: flex;
+    }
+
     .content-section {
         flex-direction: column;
     }
