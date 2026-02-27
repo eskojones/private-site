@@ -17,6 +17,17 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('html'));
 
+// Configure EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'html'));
+
+// Page Routes
+app.get('/', (req, res) => res.render('index', { title: 'Home' }));
+app.get('/features', (req, res) => res.render('features', { title: 'Features' }));
+app.get('/about', (req, res) => res.render('about', { title: 'About' }));
+app.get('/contact', (req, res) => res.render('contact', { title: 'Contact' }));
+app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Dashboard' }));
+
 // User Signup
 app.post('/api/signup', (req, res) => {
     const { username, password } = req.body;

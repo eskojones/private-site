@@ -110,15 +110,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const featuresLink = document.getElementById('features-link');
         const aboutLink = document.getElementById('about-link');
         const contactLink = document.getElementById('contact-link');
+        const logoutLi = document.getElementById('logout-li');
 
         if (username) {
             if (authLink) {
                 authLink.textContent = `Hello, ${username}`;
-                authLink.href = 'dashboard.html';
+                authLink.href = '/dashboard';
             }
             if (featuresLink) featuresLink.classList.add('hidden');
             if (aboutLink) aboutLink.classList.add('hidden');
             if (contactLink) contactLink.classList.add('hidden');
+            if (logoutLi) logoutLi.classList.remove('hidden');
         } else {
             if (authLink) {
                 authLink.textContent = 'Login / Signup';
@@ -127,6 +129,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (featuresLink) featuresLink.classList.remove('hidden');
             if (aboutLink) aboutLink.classList.remove('hidden');
             if (contactLink) contactLink.classList.remove('hidden');
+            if (logoutLi) logoutLi.classList.add('hidden');
+        }
+    }
+
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+    }
+
+    // Dashboard-specific logic
+    if (window.location.pathname === '/dashboard') {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            window.location.href = '/';
+        } else {
+            const welcomeMsg = document.getElementById('welcome-message');
+            if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user}`;
         }
     }
 
@@ -201,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('user', data.username);
                     closeAuthModal();
                     updateAuthUI(data.username);
-                    window.location.href = 'dashboard.html';
+                    window.location.href = '/dashboard';
                 } else {
                     if (loginError) {
                         loginError.textContent = data.error;
