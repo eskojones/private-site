@@ -16,10 +16,10 @@
             </div>
 
             <div id="pages-list">
-                <h3>Current Pages</h3>
-                <ul id="cms-pages-ul" style="list-style: none; padding: 0;">
-                    <!-- Pages will be listed here -->
-                </ul>
+                <h3>Page Explorer</h3>
+                <div id="cms-tree-container" class="tree-view">
+                    <!-- Tree will be injected here -->
+                </div>
             </div>
 
             <div id="page-editor" class="hidden" style="border: 1px solid #ccc; padding: 2rem; margin-top: 2rem; border-radius: 8px;">
@@ -64,7 +64,7 @@
                 return;
             }
 
-            const pagesUl = document.getElementById('cms-pages-ul');
+            const treeContainer = document.getElementById('cms-tree-container');
             const editor = document.getElementById('page-editor');
             const cmsForm = document.getElementById('cms-form');
             const btnNewPage = document.getElementById('btn-new-page');
@@ -75,29 +75,82 @@
                 'x-admin-status': 'true'
             };
 
-            async function loadPages() {
-                const res = await fetch('/api/nav');
-                const pages = await res.json();
-                pagesUl.innerHTML = '';
-                pages.forEach(p => {
-                    const li = document.createElement('li');
-                    li.style.padding = '1rem';
-                    li.style.borderBottom = '1px solid #eee';
-                    li.style.display = 'flex';
-                    li.style.justifyContent = 'space-between';
-                    li.innerHTML = `
-                        <span><strong>${p.title}</strong> (/${p.slug})</span>
-                        <div>
-                            <button onclick="editPage('${p.slug}')">Edit</button>
-                            <button onclick="deletePage('${p.slug}')" style="color: red;">Delete</button>
-                        </div>
+            function buildTree(pages) {
+                const root = {};
+                pages.forEach(page => {
+                    const parts = page.slug === 'index' ? ['Home'] : page.slug.split('/');
+                    let current = root;
+                    parts.forEach((part, index) => {
+                        if (!current[part]) {
+                            current[part] = { 
+                                children: {}, 
+                                page: index === parts.length - 1 ? page : null,
+                                label: part
+                            };
+                        }
+                        current = current[part].children;
+                    });
+                });
+                return root;
+            }
+
+            function renderTree(nodes, container) {
+                Object.values(nodes).forEach(node => {
+                    const nodeEl = document.createElement('div');
+                    nodeEl.className = 'tree-node';
+                    
+                    const contentEl = document.createElement('div');
+                    contentEl.className = 'node-content';
+                    
+                    const labelEl = document.createElement('div');
+                    labelEl.className = 'node-label';
+                    labelEl.innerHTML = `
+                        <span class="icon">${node.page ? '📄' : '📁'}</span>
+                        <span>${node.page ? node.page.title : node.label}</span>
+                        <span class="slug">${node.page ? '(' + node.page.slug + ')' : ''}</span>
                     `;
-                    pagesUl.appendChild(li);
+                    
+                    contentEl.appendChild(labelEl);
+
+                    if (node.page) {
+                        const actionsEl = document.createElement('div');
+                        actionsEl.className = 'node-actions';
+                        actionsEl.innerHTML = `
+                            <button onclick="editPage('${node.page.slug}')">Edit</button>
+                            <button onclick="deletePage('${node.page.slug}')" style="color: red;">Delete</button>
+                        `;
+                        contentEl.appendChild(actionsEl);
+                    }
+                    
+                    nodeEl.appendChild(contentEl);
+
+                    if (Object.keys(node.children).length > 0) {
+                        const childrenEl = document.createElement('div');
+                        childrenEl.className = 'node-children';
+                        renderTree(node.children, childrenEl);
+                        nodeEl.appendChild(childrenEl);
+                    }
+
+                    container.appendChild(nodeEl);
                 });
             }
 
+            async function loadPages() {
+                const res = await fetch('/api/nav');
+                const pages = await res.json();
+                treeContainer.innerHTML = '';
+                const tree = buildTree(pages);
+                renderTree(tree, treeContainer);
+            }
+
             window.editPage = async (slug) => {
-                const res = await fetch(`/api/pages/${slug}`);
+                const res = await fetch(`/api/pages/${slug}`, {
+                    headers: adminHeaders
+                });
+                if (!res.ok) {
+                    alert('Failed to fetch page data. Admins only.');
+                    return;
+                }
                 const data = await res.json();
                 
                 document.getElementById('edit-old-slug').value = data.slug;

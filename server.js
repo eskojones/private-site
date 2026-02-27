@@ -57,7 +57,7 @@ app.get('/api/nav', (req, res) => {
 });
 
 // CMS API Endpoints
-app.get('/api/pages/:slug', (req, res) => {
+app.get('/api/pages/:slug', checkAdmin, (req, res) => {
     const slug = req.params.slug;
     const pagePath = path.join(PAGES_DIR, `${slug}.json`);
     if (fs.existsSync(pagePath)) {
