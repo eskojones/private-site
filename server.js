@@ -21,6 +21,13 @@ if (!fs.existsSync(PAGES_DIR)) {
     fs.mkdirSync(PAGES_DIR);
 }
 
+const USERS_DIR = path.join(DATA_DIR, 'users');
+
+// Ensure users directory exists
+if (!fs.existsSync(USERS_DIR)) {
+    fs.mkdirSync(USERS_DIR);
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('html'));
@@ -118,7 +125,7 @@ app.post('/api/signup', (req, res) => {
         return res.status(400).json({ error: 'Username and password required' });
     }
 
-    const userFile = path.join(DATA_DIR, `${username}.json`);
+    const userFile = path.join(USERS_DIR, `${username}.json`);
 
     if (fs.existsSync(userFile)) {
         return res.status(409).json({ error: 'User already exists' });
@@ -138,7 +145,7 @@ app.post('/api/login', (req, res) => {
         return res.status(400).json({ error: 'Username and password required' });
     }
 
-    const userFile = path.join(DATA_DIR, `${username}.json`);
+    const userFile = path.join(USERS_DIR, `${username}.json`);
 
     if (!fs.existsSync(userFile)) {
         return res.status(401).json({ error: 'Invalid credentials' });
