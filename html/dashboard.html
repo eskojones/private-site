@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Private Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="8" fill="#ff5500"/>
+                    <path d="M10 20L20 10L30 20L20 30L10 20Z" fill="white"/>
+                </svg>
+                <span>Brand</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#" id="logout-link">Logout</a></li>
+            </ul>
+            <div class="menu-container">
+                <button id="menu-button" aria-haspopup="true" aria-expanded="false" aria-label="Toggle menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 id="welcome-message">Welcome to your Dashboard</h1>
+            <p>This is where your private content will live.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('welcome-message').textContent = `Welcome, ${user}`;
+            
+            document.getElementById('logout-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

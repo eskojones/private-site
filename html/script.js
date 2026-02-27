@@ -154,8 +154,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function updateAuthLink(username) {
+        const featuresLink = document.getElementById('features-link');
+        const aboutLink = document.getElementById('about-link');
+        const contactLink = document.getElementById('contact-link');
+
         if (username) {
             authLink.textContent = `Hello, ${username}`;
+            authLink.href = 'dashboard.html';
+            
+            // Hide other links when logged in
+            if (featuresLink) featuresLink.classList.add('hidden');
+            if (aboutLink) aboutLink.classList.add('hidden');
+            if (contactLink) contactLink.classList.add('hidden');
+        } else {
+            authLink.textContent = 'Login / Signup';
+            authLink.href = '#';
+            
+            // Show other links when logged out
+            if (featuresLink) featuresLink.classList.remove('hidden');
+            if (aboutLink) aboutLink.classList.remove('hidden');
+            if (contactLink) contactLink.classList.remove('hidden');
         }
     }
 
