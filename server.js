@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const { marked } = require('marked');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = 3000;
@@ -118,7 +119,7 @@ app.delete('/api/pages/:slug', checkAdmin, (req, res) => {
 });
 
 // User Signup
-app.post('/api/signup', (req, res) => {
+app.post('/api/signup', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -131,14 +132,24 @@ app.post('/api/signup', (req, res) => {
         return res.status(409).json({ error: 'User already exists' });
     }
 
-    const userData = { username, password, admin: false };
+    // Check if this is the first user (if so, make them admin)
+    const existingUsers = fs.readdirSync(USERS_DIR);
+    const isAdmin = existingUsers.length === 0;
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const userData = { username, password: hashedPassword, admin: isAdmin };
     fs.writeFileSync(userFile, JSON.stringify(userData, null, 2));
 
-    res.status(201).json({ message: 'User created successfully' });
+    res.status(201).json({ 
+        message: 'User created successfully', 
+        admin: isAdmin 
+    });
 });
 
 // User Login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -153,7 +164,10 @@ app.post('/api/login', (req, res) => {
 
     const userData = JSON.parse(fs.readFileSync(userFile, 'utf8'));
 
-    if (userData.password !== password) {
+    // Compare password
+    const isMatch = await bcrypt.compare(password, userData.password);
+
+    if (!isMatch) {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 

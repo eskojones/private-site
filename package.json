@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/eskojones/private-site#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "ejs": "^4.0.1",

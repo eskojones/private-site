@@ -50,10 +50,7 @@ The site will be available at `http://localhost:3000`.
 
 ### 3. Setup Administrator
 
-To access the CMS, you need an admin account. 
-1. Sign up for a new account via the UI.
-2. Open the corresponding JSON file in `data/users/[username].json`.
-3. Set `"admin": true` in the user object.
+The first user to sign up via the UI will automatically be granted administrator privileges. Any subsequent users will be standard users by default.
 
 ## Deployment
 
@@ -65,7 +62,7 @@ The project is ready for local deployment using the steps above. Ensure the `dat
 
 1. **Environment Variables**: Use a `.env` file to manage sensitive configurations like the `PORT`.
 2. **Security**: 
-   - Current user passwords are stored in plain text. For production, implement password hashing (e.g., using `bcrypt`).
+   - User passwords are securely hashed using `bcryptjs`.
    - Use a production-ready session management system instead of the current mock headers.
 3. **Storage**: For larger sites, consider migrating from the JSON file-based storage to a database like MongoDB or PostgreSQL.
 4. **Process Manager**: Use `pm2` to keep the application running in a production environment:
