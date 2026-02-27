@@ -64,6 +64,11 @@ header {
     color: var(--brand-orange);
 }
 
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 .nav-links {
     display: flex;
     list-style: none;
