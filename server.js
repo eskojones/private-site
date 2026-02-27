@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const { marked } = require('marked');
 
 const app = express();
 const PORT = 3000;
@@ -169,6 +170,22 @@ app.get(['/', '/:slug'], (req, res, next) => {
 
     if (fs.existsSync(pagePath)) {
         const pageData = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
+        
+        // Parse Markdown in content chunks
+        if (pageData.content && Array.isArray(pageData.content)) {
+            pageData.content = pageData.content.map(section => {
+                if (section.type === 'column-section' && section.columns) {
+                    section.columns = section.columns.map(col => ({
+                        ...col,
+                        text: marked.parse(col.text || '')
+                    }));
+                } else if (section.type === 'text-section' && section.text) {
+                    section.text = marked.parse(section.text);
+                }
+                return section;
+            });
+        }
+
         res.render('page', { 
             title: pageData.title,
             hero: pageData.hero,

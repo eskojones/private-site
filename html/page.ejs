@@ -17,7 +17,7 @@
                         <% section.columns.forEach(col => { %>
                             <div class="column">
                                 <h2><%= col.title %></h2>
-                                <p><%= col.text %></p>
+                                <div class="markdown-body"><%- col.text %></div>
                             </div>
                         <% }); %>
                     </section>
@@ -25,7 +25,7 @@
                     <section class="content-section">
                         <div class="column full-width">
                             <h2><%= section.title %></h2>
-                            <p><%= section.text %></p>
+                            <div class="markdown-body"><%- section.text %></div>
                         </div>
                     </section>
                 <% } %>
