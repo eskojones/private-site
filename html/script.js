@@ -106,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const username = document.getElementById('signup-username').value;
         const password = document.getElementById('signup-password').value;
+        const signupError = document.getElementById('signup-error');
+
+        signupError.classList.add('hidden');
+        signupError.textContent = '';
 
         try {
             const response = await fetch('/api/signup', {
@@ -116,15 +120,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             if (response.ok) {
-                alert('Signup successful! You can now login.');
+                // Success - switch to login and show success
                 signupFormContainer.classList.add('hidden');
                 loginFormContainer.classList.remove('hidden');
+                
+                const loginHeader = loginFormContainer.querySelector('h2');
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-message';
+                successMsg.textContent = 'Signup successful! Please login.';
+                loginHeader.after(successMsg);
+                
+                setTimeout(() => successMsg.remove(), 5000);
             } else {
-                alert(data.error);
+                signupError.textContent = data.error;
+                signupError.classList.remove('hidden');
             }
         } catch (error) {
             console.error('Signup error:', error);
-            alert('Signup failed. Is the server running?');
+            signupError.textContent = 'Signup failed. Is the server running?';
+            signupError.classList.remove('hidden');
         }
     });
 
@@ -133,6 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
+        const loginError = document.getElementById('login-error');
+
+        loginError.classList.add('hidden');
+        loginError.textContent = '';
 
         try {
             const response = await fetch('/api/login', {
@@ -143,16 +161,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             if (response.ok) {
-                alert(`Login successful! Welcome ${data.username}`);
                 localStorage.setItem('user', data.username);
                 closeAuthModal();
                 updateAuthLink(data.username);
+                window.location.href = 'dashboard.html';
             } else {
-                alert(data.error);
+                loginError.textContent = data.error;
+                loginError.classList.remove('hidden');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Is the server running?');
+            loginError.textContent = 'Login failed. Is the server running?';
+            loginError.classList.remove('hidden');
         }
     });
 
