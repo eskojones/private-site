@@ -68,6 +68,8 @@ header {
     display: flex;
     list-style: none;
     gap: 2rem;
+    margin-left: 3rem;
+    margin-right: auto;
 }
 
 .nav-links a {
@@ -86,7 +88,7 @@ header {
 }
 
 #menu-button {
-    display: none; /* Hidden on desktop */
+    display: flex;
     background-color: var(--brand-orange);
     color: white;
     border: none;
@@ -231,10 +233,6 @@ header {
 @media (max-width: 768px) {
     .nav-links {
         display: none;
-    }
-
-    #menu-button {
-        display: flex;
     }
 
     .content-section {
