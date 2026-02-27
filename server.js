@@ -158,7 +158,7 @@ app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Dashboard'
 app.get('/cms', (req, res) => res.render('cms', { title: 'CMS Dashboard' }));
 
 // Dynamic Page Routes
-app.get('/:slug?', (req, res, next) => {
+app.get(['/', '/:slug'], (req, res, next) => {
     const slug = req.params.slug || 'index';
     
     if (slug === 'api' || req.url.startsWith('/api')) return next();
