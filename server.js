@@ -15,7 +15,7 @@ if (!fs.existsSync(DATA_DIR)) {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.'));
+app.use(express.static('html'));
 
 // User Signup
 app.post('/api/signup', (req, res) => {
