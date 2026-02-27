@@ -66,8 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
     authLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        openAuthModal();
+        const loggedInUser = localStorage.getItem('user');
+        if (!loggedInUser) {
+            e.preventDefault();
+            openAuthModal();
+        }
     });
 
     closeModal.addEventListener('click', closeAuthModal);
