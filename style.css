@@ -72,18 +72,50 @@ header {
     background-color: var(--brand-orange);
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem;
     border-radius: 6px;
     font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     transition: opacity var(--transition-speed);
 }
 
 #menu-button:hover {
     opacity: 0.9;
+}
+
+/* Hamburger Icon Styling */
+.hamburger {
+    width: 24px;
+    height: 18px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hamburger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: white;
+    border-radius: 2px;
+    transition: all var(--transition-speed);
+}
+
+/* Transform to 'X' when button is active */
+#menu-button.active .hamburger span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+#menu-button.active .hamburger span:nth-child(2) {
+    opacity: 0;
+}
+
+#menu-button.active .hamburger span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
 }
 
 #dropdown-menu {

@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to open the dropdown
     function openDropdown() {
         dropdownMenu.classList.remove('hidden');
+        menuButton.classList.add('active');
         // Small delay to allow the CSS transitions to work
         setTimeout(() => {
             dropdownMenu.classList.add('visible');
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to close the dropdown
     function closeDropdown() {
         dropdownMenu.classList.remove('visible');
+        menuButton.classList.remove('active');
         menuButton.setAttribute('aria-expanded', 'false');
         
         // Hide after transition completes
