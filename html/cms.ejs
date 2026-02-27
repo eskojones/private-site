@@ -42,6 +42,10 @@
                         <label>Hero Subtitle:</label>
                         <input type="text" id="hero-subtitle" required placeholder="Sub Heading under Hero">
                     </div>
+                    <div class="form-group" style="display: flex; gap: 2rem;">
+                        <label><input type="checkbox" id="page-public" checked> Is Public</label>
+                        <label><input type="checkbox" id="page-nav" checked> Show in Navigation</label>
+                    </div>
                     <div class="form-group">
                         <label>Content Chunks (JSON Array):</label>
                         <textarea id="page-content" placeholder="Enter content as a JSON array of sections"></textarea>
@@ -165,6 +169,8 @@
                 document.getElementById('hero-title').value = data.hero.title;
                 document.getElementById('hero-subtitle').value = data.hero.subtitle;
                 document.getElementById('page-content').value = JSON.stringify(data.content, null, 2);
+                document.getElementById('page-public').checked = data.isPublic !== undefined ? data.isPublic : true;
+                document.getElementById('page-nav').checked = data.showInNav !== undefined ? data.showInNav : true;
                 
                 document.getElementById('editor-title').textContent = 'Edit Page';
                 editor.classList.remove('hidden');
@@ -189,6 +195,8 @@
                 cmsForm.reset();
                 document.getElementById('edit-old-slug').value = '';
                 document.getElementById('page-content').value = '[]';
+                document.getElementById('page-public').checked = true;
+                document.getElementById('page-nav').checked = true;
                 document.getElementById('editor-title').textContent = 'Create Page';
                 editor.classList.remove('hidden');
             });
@@ -207,7 +215,9 @@
                         title: document.getElementById('hero-title').value,
                         subtitle: document.getElementById('hero-subtitle').value
                     },
-                    content: JSON.parse(document.getElementById('page-content').value || '[]')
+                    content: JSON.parse(document.getElementById('page-content').value || '[]'),
+                    isPublic: document.getElementById('page-public').checked,
+                    showInNav: document.getElementById('page-nav').checked
                 };
 
                 const method = oldSlug ? 'PUT' : 'POST';

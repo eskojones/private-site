@@ -56,8 +56,13 @@ app.get('/api/nav', (req, res) => {
             .filter(file => file.endsWith('.json'))
             .map(file => {
                 const content = JSON.parse(fs.readFileSync(path.join(PAGES_DIR, file), 'utf8'));
-                return { slug: content.slug, title: content.title };
-            });
+                return { 
+                    slug: content.slug, 
+                    title: content.title,
+                    showInNav: content.showInNav !== undefined ? content.showInNav : true
+                };
+            })
+            .filter(item => item.showInNav === true);
         res.json(nav);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch navigation' });
@@ -191,6 +196,16 @@ app.get(['/', '/:slug'], (req, res, next) => {
 
     if (fs.existsSync(pagePath)) {
         const pageData = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
+        const isPublic = pageData.isPublic !== undefined ? pageData.isPublic : true;
+        const isAdmin = req.headers['x-admin-status'] === 'true';
+
+        if (!isPublic && !isAdmin) {
+            return res.status(403).render('page', {
+                title: '403 - Forbidden',
+                hero: { title: '403', subtitle: 'This page is private and requires administrator access.' },
+                content: []
+            });
+        }
         
         // Parse Markdown in content chunks
         if (pageData.content && Array.isArray(pageData.content)) {

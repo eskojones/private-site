@@ -1,9 +1,13 @@
 {
-    "slug": "features",
-    "title": "Features",
-    "hero": {
-        "title": "Our Features",
-        "subtitle": "Coming soon: Discover the powerful tools we're building for you."
-    },
-    "content": []
+    "slug":  "features",
+    "title":  "Features",
+    "hero":  {
+                 "title":  "Our Features",
+                 "subtitle":  "Coming soon: Discover the powerful tools we\u0027re building for you."
+             },
+    "content":  [
+
+                ],
+    "isPublic":  true,
+    "showInNav":  true
 }

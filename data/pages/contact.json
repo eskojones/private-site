@@ -1,9 +1,13 @@
 {
-    "slug": "contact",
-    "title": "Contact",
-    "hero": {
-        "title": "Contact Us",
-        "subtitle": "Have questions? Reach out to us at support@privatesite.com."
-    },
-    "content": []
+    "slug":  "contact",
+    "title":  "Contact",
+    "hero":  {
+                 "title":  "Contact Us",
+                 "subtitle":  "Have questions? Reach out to us at support@privatesite.com."
+             },
+    "content":  [
+
+                ],
+    "isPublic":  true,
+    "showInNav":  true
 }
