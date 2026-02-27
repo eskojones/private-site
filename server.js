@@ -13,6 +13,13 @@ if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR);
 }
 
+const PAGES_DIR = path.join(DATA_DIR, 'pages');
+
+// Ensure pages directory exists
+if (!fs.existsSync(PAGES_DIR)) {
+    fs.mkdirSync(PAGES_DIR);
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('html'));
@@ -21,12 +28,108 @@ app.use(express.static('html'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'html'));
 
+// API to get page list for navigation
+app.get('/api/nav', (req, res) => {
+    try {
+        const files = fs.readdirSync(PAGES_DIR);
+        const nav = files
+            .filter(file => file.endsWith('.json'))
+            .map(file => {
+                const content = JSON.parse(fs.readFileSync(path.join(PAGES_DIR, file), 'utf8'));
+                return { slug: content.slug, title: content.title };
+            });
+        res.json(nav);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch navigation' });
+    }
+});
+
 // Page Routes
-app.get('/', (req, res) => res.render('index', { title: 'Home' }));
-app.get('/features', (req, res) => res.render('features', { title: 'Features' }));
-app.get('/about', (req, res) => res.render('about', { title: 'About' }));
-app.get('/contact', (req, res) => res.render('contact', { title: 'Contact' }));
 app.get('/dashboard', (req, res) => res.render('dashboard', { title: 'Dashboard' }));
+app.get('/cms', (req, res) => res.render('cms', { title: 'CMS Dashboard' }));
+
+// CMS API Endpoints
+app.get('/api/pages/:slug', (req, res) => {
+    const slug = req.params.slug;
+    const pagePath = path.join(PAGES_DIR, `${slug}.json`);
+    if (fs.existsSync(pagePath)) {
+        const data = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
+        res.json(data);
+    } else {
+        res.status(404).json({ error: 'Page not found' });
+    }
+});
+
+app.post('/api/pages', (req, res) => {
+    const pageData = req.body;
+    const pagePath = path.join(PAGES_DIR, `${pageData.slug}.json`);
+    if (fs.existsSync(pagePath)) {
+        return res.status(400).json({ error: 'Page already exists' });
+    }
+    fs.writeFileSync(pagePath, JSON.stringify(pageData, null, 2));
+    res.status(201).json(pageData);
+});
+
+app.put('/api/pages/:oldSlug', (req, res) => {
+    const oldSlug = req.params.oldSlug;
+    const pageData = req.body;
+    const oldPath = path.join(PAGES_DIR, `${oldSlug}.json`);
+    const newPath = path.join(PAGES_DIR, `${pageData.slug}.json`);
+
+    if (fs.existsSync(oldPath)) {
+        if (oldSlug !== pageData.slug && fs.existsSync(newPath)) {
+            return res.status(400).json({ error: 'New slug already exists' });
+        }
+        if (oldSlug !== pageData.slug) {
+            fs.unlinkSync(oldPath);
+        }
+        fs.writeFileSync(newPath, JSON.stringify(pageData, null, 2));
+        res.json(pageData);
+    } else {
+        res.status(404).json({ error: 'Page not found' });
+    }
+});
+
+app.delete('/api/pages/:slug', (req, res) => {
+    const slug = req.params.slug;
+    if (slug === 'index') return res.status(400).json({ error: 'Cannot delete home page' });
+    const pagePath = path.join(PAGES_DIR, `${slug}.json`);
+    if (fs.existsSync(pagePath)) {
+        fs.unlinkSync(pagePath);
+        res.json({ message: 'Page deleted' });
+    } else {
+        res.status(404).json({ error: 'Page not found' });
+    }
+});
+
+// Dynamic Page Routes
+app.get('/:slug?', (req, res, next) => {
+    const slug = req.params.slug || 'index';
+    
+    // Skip API routes
+    if (slug === 'api' || req.url.startsWith('/api')) return next();
+    // Skip static files (very basic check)
+    if (slug.includes('.')) return next();
+    // Special handling for hardcoded pages
+    if (slug === 'dashboard' || slug === 'cms') return next();
+
+    const pagePath = path.join(PAGES_DIR, `${slug}.json`);
+
+    if (fs.existsSync(pagePath)) {
+        const pageData = JSON.parse(fs.readFileSync(pagePath, 'utf8'));
+        res.render('page', { 
+            title: pageData.title,
+            hero: pageData.hero,
+            content: pageData.content || []
+        });
+    } else {
+        res.status(404).render('page', {
+            title: '404 - Not Found',
+            hero: { title: '404', subtitle: 'Page not found' },
+            content: []
+        });
+    }
+});
 
 // User Signup
 app.post('/api/signup', (req, res) => {

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="hero">
+            <h1>CMS Dashboard</h1>
+            <p>Manage your site content and pages.</p>
+        </section>
+
+        <section class="content-section" style="display: block; max-width: 800px; margin: 0 auto;">
+            <div id="cms-actions" style="margin-bottom: 2rem;">
+                <button id="btn-new-page" class="cta-button">Create New Page</button>
+            </div>
+
+            <div id="pages-list">
+                <h3>Current Pages</h3>
+                <ul id="cms-pages-ul" style="list-style: none; padding: 0;">
+                    <!-- Pages will be listed here -->
+                </ul>
+            </div>
+
+            <div id="page-editor" class="hidden" style="border: 1px solid #ccc; padding: 2rem; margin-top: 2rem; border-radius: 8px;">
+                <h2 id="editor-title">Create Page</h2>
+                <form id="cms-form">
+                    <input type="hidden" id="edit-old-slug">
+                    <div style="margin-bottom: 1rem;">
+                        <label>Slug (URL):</label><br>
+                        <input type="text" id="page-slug" required style="width: 100%; padding: 0.5rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Nav Title:</label><br>
+                        <input type="text" id="page-title" required style="width: 100%; padding: 0.5rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Hero Title:</label><br>
+                        <input type="text" id="hero-title" required style="width: 100%; padding: 0.5rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Hero Subtitle:</label><br>
+                        <input type="text" id="hero-subtitle" required style="width: 100%; padding: 0.5rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Content Chunks (JSON Array):</label><br>
+                        <textarea id="page-content" style="width: 100%; height: 200px; padding: 0.5rem;"></textarea>
+                    </div>
+                    <button type="submit" class="cta-button">Save Page</button>
+                    <button type="button" id="btn-cancel-edit" style="background: #ccc; color: #333;" class="cta-button">Cancel</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <%- include('partials/scripts') %>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = '/';
+                return;
+            }
+
+            const pagesUl = document.getElementById('cms-pages-ul');
+            const editor = document.getElementById('page-editor');
+            const cmsForm = document.getElementById('cms-form');
+            const btnNewPage = document.getElementById('btn-new-page');
+            const btnCancel = document.getElementById('btn-cancel-edit');
+
+            async function loadPages() {
+                const res = await fetch('/api/nav');
+                const pages = await res.json();
+                pagesUl.innerHTML = '';
+                pages.forEach(p => {
+                    const li = document.createElement('li');
+                    li.style.padding = '1rem';
+                    li.style.borderBottom = '1px solid #eee';
+                    li.style.display = 'flex';
+                    li.style.justifyContent = 'space-between';
+                    li.innerHTML = `
+                        <span><strong>${p.title}</strong> (/${p.slug})</span>
+                        <div>
+                            <button onclick="editPage('${p.slug}')">Edit</button>
+                            <button onclick="deletePage('${p.slug}')" style="color: red;">Delete</button>
+                        </div>
+                    `;
+                    pagesUl.appendChild(li);
+                });
+            }
+
+            window.editPage = async (slug) => {
+                const res = await fetch(`/api/pages/${slug}`);
+                const data = await res.json();
+                
+                document.getElementById('edit-old-slug').value = data.slug;
+                document.getElementById('page-slug').value = data.slug;
+                document.getElementById('page-title').value = data.title;
+                document.getElementById('hero-title').value = data.hero.title;
+                document.getElementById('hero-subtitle').value = data.hero.subtitle;
+                document.getElementById('page-content').value = JSON.stringify(data.content, null, 2);
+                
+                document.getElementById('editor-title').textContent = 'Edit Page';
+                editor.classList.remove('hidden');
+            };
+
+            window.deletePage = async (slug) => {
+                if (slug === 'index') {
+                    alert('Cannot delete the home page!');
+                    return;
+                }
+                if (confirm(`Are you sure you want to delete /${slug}?`)) {
+                    await fetch(`/api/pages/${slug}`, { method: 'DELETE' });
+                    loadPages();
+                    initNavigation(); // From script.js
+                }
+            };
+
+            btnNewPage.addEventListener('click', () => {
+                cmsForm.reset();
+                document.getElementById('edit-old-slug').value = '';
+                document.getElementById('page-content').value = '[]';
+                document.getElementById('editor-title').textContent = 'Create Page';
+                editor.classList.remove('hidden');
+            });
+
+            btnCancel.addEventListener('click', () => {
+                editor.classList.add('hidden');
+            });
+
+            cmsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const oldSlug = document.getElementById('edit-old-slug').value;
+                const pageData = {
+                    slug: document.getElementById('page-slug').value,
+                    title: document.getElementById('page-title').value,
+                    hero: {
+                        title: document.getElementById('hero-title').value,
+                        subtitle: document.getElementById('hero-subtitle').value
+                    },
+                    content: JSON.parse(document.getElementById('page-content').value || '[]')
+                };
+
+                const method = oldSlug ? 'PUT' : 'POST';
+                const url = oldSlug ? `/api/pages/${oldSlug}` : '/api/pages';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pageData)
+                });
+
+                if (res.ok) {
+                    editor.classList.add('hidden');
+                    loadPages();
+                    if (typeof initNavigation === 'function') initNavigation();
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + err.error);
+                }
+            });
+
+            loadPages();
+        });
+    </script>
+</body>
+</html>

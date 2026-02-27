@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="hero">
+            <h1><%= hero.title %></h1>
+            <p><%= hero.subtitle %></p>
+        </section>
+
+        <% if (content && content.length > 0) { %>
+            <% content.forEach(section => { %>
+                <% if (section.type === 'column-section') { %>
+                    <section class="content-section">
+                        <% section.columns.forEach(col => { %>
+                            <div class="column">
+                                <h2><%= col.title %></h2>
+                                <p><%= col.text %></p>
+                            </div>
+                        <% }); %>
+                    </section>
+                <% } else if (section.type === 'text-section') { %>
+                    <section class="content-section">
+                        <div class="column full-width">
+                            <h2><%= section.title %></h2>
+                            <p><%= section.text %></p>
+                        </div>
+                    </section>
+                <% } %>
+            <% }); %>
+        <% } %>
+    </main>
+
+    <%- include('partials/scripts') %>
+</body>
+</html>

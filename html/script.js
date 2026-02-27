@@ -105,31 +105,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Navigation Logic ---
+    window.initNavigation = async function() {
+        const navContainer = document.getElementById('dynamic-nav');
+        if (!navContainer) return;
+
+        try {
+            const response = await fetch('/api/nav');
+            const navItems = await response.json();
+            
+            // Re-render nav links
+            const authLi = document.getElementById('auth-li');
+            const logoutLi = document.getElementById('logout-li');
+            const cmsLi = document.getElementById('cms-li');
+            
+            // Clear current links but keep auth-related ones
+            navContainer.innerHTML = '';
+            
+            navItems.forEach(item => {
+                const li = document.createElement('li');
+                if (item.slug === 'index') {
+                    li.id = 'home-link';
+                    li.innerHTML = `<a href="/">Home</a>`;
+                } else {
+                    li.className = 'dynamic-page-link';
+                    li.innerHTML = `<a href="/${item.slug}">${item.title}</a>`;
+                }
+                navContainer.appendChild(li);
+            });
+            
+            if (cmsLi) navContainer.appendChild(cmsLi);
+            navContainer.appendChild(authLi);
+            navContainer.appendChild(logoutLi);
+            
+            // Refresh UI status
+            const user = localStorage.getItem('user');
+            updateAuthUI(user);
+        } catch (err) {
+            console.error('Failed to load navigation:', err);
+        }
+    }
+
     // --- Authentication Logic ---
     function updateAuthUI(username) {
-        const featuresLink = document.getElementById('features-link');
-        const aboutLink = document.getElementById('about-link');
-        const contactLink = document.getElementById('contact-link');
+        const dynamicLinks = document.querySelectorAll('.dynamic-page-link');
         const logoutLi = document.getElementById('logout-li');
+        const cmsLi = document.getElementById('cms-li');
+        const authLink = document.getElementById('auth-link');
 
         if (username) {
             if (authLink) {
                 authLink.textContent = `Hello, ${username}`;
                 authLink.href = '/dashboard';
             }
-            if (featuresLink) featuresLink.classList.add('hidden');
-            if (aboutLink) aboutLink.classList.add('hidden');
-            if (contactLink) contactLink.classList.add('hidden');
+            dynamicLinks.forEach(link => link.classList.add('hidden'));
             if (logoutLi) logoutLi.classList.remove('hidden');
+            if (cmsLi) cmsLi.classList.remove('hidden');
         } else {
             if (authLink) {
                 authLink.textContent = 'Login / Signup';
                 authLink.href = '#';
             }
-            if (featuresLink) featuresLink.classList.remove('hidden');
-            if (aboutLink) aboutLink.classList.remove('hidden');
-            if (contactLink) contactLink.classList.remove('hidden');
+            dynamicLinks.forEach(link => link.classList.remove('hidden'));
             if (logoutLi) logoutLi.classList.add('hidden');
+            if (cmsLi) cmsLi.classList.add('hidden');
         }
     }
 
@@ -241,7 +280,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial UI Setup
-    const loggedInUser = localStorage.getItem('user');
-    updateAuthUI(loggedInUser);
+    initNavigation();
 });
