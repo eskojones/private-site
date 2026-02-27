@@ -1,0 +1,54 @@
+.cms-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+#page-editor {
+    border: 1px solid var(--dropdown-border);
+    background-color: var(--dropdown-bg);
+    padding: 2rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#cms-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#cms-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+#cms-form input[type="text"],
+#cms-form textarea {
+    width: 100%;
+    max-width: 600px;
+    padding: 0.75rem;
+    border: 1px solid var(--dropdown-border);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+#cms-form input[type="text"]:focus,
+#cms-form textarea:focus {
+    outline: none;
+    border-color: var(--brand-orange);
+}
+
+#cms-form textarea {
+    max-width: 800px;
+    height: 300px;
+    font-family: monospace;
+}
+
+.cms-actions {
+    margin-bottom: 2rem;
+}

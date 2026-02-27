@@ -10,8 +10,8 @@
             <p>Manage your site content and pages.</p>
         </section>
 
-        <section class="content-section" style="display: block; max-width: 800px; margin: 0 auto;">
-            <div id="cms-actions" style="margin-bottom: 2rem;">
+        <section class="cms-container">
+            <div id="cms-actions" class="cms-actions">
                 <button id="btn-new-page" class="cta-button">Create New Page</button>
             </div>
 
@@ -22,32 +22,38 @@
                 </div>
             </div>
 
-            <div id="page-editor" class="hidden" style="border: 1px solid #ccc; padding: 2rem; margin-top: 2rem; border-radius: 8px;">
+            <div id="page-editor" class="hidden">
                 <h2 id="editor-title">Create Page</h2>
                 <form id="cms-form">
                     <input type="hidden" id="edit-old-slug">
-                    <div style="margin-bottom: 1rem;">
-                        <label>Slug (URL):</label><br>
-                        <input type="text" id="page-slug" required style="width: 100%; padding: 0.5rem;">
+                    <div class="form-group">
+                        <label>Slug (URL):</label>
+                        <input type="text" id="page-slug" required placeholder="e.g., about/team">
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label>Nav Title:</label><br>
-                        <input type="text" id="page-title" required style="width: 100%; padding: 0.5rem;">
+                    <div class="form-group">
+                        <label>Nav Title:</label>
+                        <input type="text" id="page-title" required placeholder="e.g., Our Team">
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label>Hero Title:</label><br>
-                        <input type="text" id="hero-title" required style="width: 100%; padding: 0.5rem;">
+                    <div class="form-group">
+                        <label>Hero Title:</label>
+                        <input type="text" id="hero-title" required placeholder="Main Page Heading">
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label>Hero Subtitle:</label><br>
-                        <input type="text" id="hero-subtitle" required style="width: 100%; padding: 0.5rem;">
+                    <div class="form-group">
+                        <label>Hero Subtitle:</label>
+                        <input type="text" id="hero-subtitle" required placeholder="Sub Heading under Hero">
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label>Content Chunks (JSON Array):</label><br>
-                        <textarea id="page-content" style="width: 100%; height: 200px; padding: 0.5rem;"></textarea>
+                    <div class="form-group">
+                        <label>Content Chunks (JSON Array):</label>
+                        <textarea id="page-content" placeholder="Enter content as a JSON array of sections"></textarea>
                     </div>
-                    <button type="submit" class="cta-button">Save Page</button>
-                    <button type="button" id="btn-cancel-edit" style="background: #ccc; color: #333;" class="cta-button">Cancel</button>
+                    <div class="form-group">
+                        <button type="submit" class="cta-button">Save Page</button>
+                        <button type="button" id="btn-cancel-edit" style="background: #ccc; color: #333;" class="cta-button">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
                 </form>
             </div>
         </section>
