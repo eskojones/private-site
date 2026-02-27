@@ -1,0 +1,76 @@
+:root {
+    --brand-orange: #ff5500;
+    --transition-speed: 0.3s;
+}
+
+/* Light Theme (Default) */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --nav-bg: #f8f8f8;
+    --dropdown-bg: #ffffff;
+    --dropdown-border: #e0e0e0;
+    --hover-bg: #f0f0f0;
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #121212;
+        --text-color: #f0f0f0;
+        --nav-bg: #1e1e1e;
+        --dropdown-bg: #2d2d2d;
+        --dropdown-border: #3d3d3d;
+        --hover-bg: #3d3d3d;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.markdown-body {
+    line-height: 1.6;
+}
+
+.markdown-body p {
+    margin-bottom: 1rem;
+}
+
+.markdown-body ul, .markdown-body ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-body code {
+    background: #f4f4f4;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.markdown-body pre {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
