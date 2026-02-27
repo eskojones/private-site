@@ -5,28 +5,45 @@ const fs = require('fs');
 const path = require('path');
 const { marked } = require('marked');
 const bcrypt = require('bcryptjs');
+const yaml = require('js-yaml');
+
+// Load configuration
+let config = {
+    server: { port: 3000 },
+    paths: {
+        data_dir: 'data',
+        pages_dir: 'data/pages',
+        users_dir: 'data/users'
+    }
+};
+
+try {
+    const fileContents = fs.readFileSync('server.conf', 'utf8');
+    const loadedConfig = yaml.load(fileContents);
+    config = { ...config, ...loadedConfig };
+} catch (e) {
+    console.warn('Could not load server.conf, using default settings');
+}
 
 const app = express();
-const PORT = 3000;
-const DATA_DIR = path.join(__dirname, 'data');
+const PORT = config.server.port;
+const DATA_DIR = path.isAbsolute(config.paths.data_dir) ? config.paths.data_dir : path.join(__dirname, config.paths.data_dir);
+const PAGES_DIR = path.isAbsolute(config.paths.pages_dir) ? config.paths.pages_dir : path.join(__dirname, config.paths.pages_dir);
+const USERS_DIR = path.isAbsolute(config.paths.users_dir) ? config.paths.users_dir : path.join(__dirname, config.paths.users_dir);
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
+    fs.mkdirSync(DATA_DIR, { recursive: true });
 }
-
-const PAGES_DIR = path.join(DATA_DIR, 'pages');
 
 // Ensure pages directory exists
 if (!fs.existsSync(PAGES_DIR)) {
-    fs.mkdirSync(PAGES_DIR);
+    fs.mkdirSync(PAGES_DIR, { recursive: true });
 }
-
-const USERS_DIR = path.join(DATA_DIR, 'users');
 
 // Ensure users directory exists
 if (!fs.existsSync(USERS_DIR)) {
-    fs.mkdirSync(USERS_DIR);
+    fs.mkdirSync(USERS_DIR, { recursive: true });
 }
 
 app.use(cors());

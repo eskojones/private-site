@@ -14,7 +14,8 @@ This document provides essential context and instructions for AI agents working 
 
 ## Architecture & Key Files
 
-- `server.js`: The central hub. Handles routing, API endpoints, authentication logic, and Markdown parsing via `marked`.
+- `server.js`: The central hub. Handles routing, API endpoints, authentication logic, and Markdown parsing via `marked`. Now loads configuration from `server.conf`.
+- `server.conf`: YAML configuration file for port and directory paths.
 - `data/pages/`: Contains page definitions as JSON.
     - Fields: `slug`, `title`, `hero` (title/subtitle), `content` (array of sections), `isPublic`, `showInNav`.
 - `data/users/`: Stores user credentials and admin status (hashed passwords).
