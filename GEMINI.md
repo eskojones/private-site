@@ -9,7 +9,8 @@ This document provides essential context and instructions for AI agents working 
 - **Frontend:** Server-side rendered (SSR) using EJS templates. Styled with modular Vanilla CSS.
 - **Backend:** Node.js/Express.5x.
 - **Data Storage:** Flat JSON files in the `data/` directory for both pages and user profiles.
-- **Authentication:** Password hashing with `bcryptjs`. Session/Admin status currently managed via custom headers and local storage (transition to secure sessions is planned).
+- **Authentication:** Secure JWT-based authentication with password hashing (`bcryptjs`). Session management is handled via `httpOnly` cookies and local storage for UI state.
+- **Security:** Integrated `helmet` for security headers, `express-rate-limit` for brute-force protection, and input sanitization to prevent path traversal.
 - **CMS:** Supports dynamic page creation, editing, and deletion. Includes a hierarchical tree-view explorer and visibility controls (`isPublic`, `showInNav`).
 
 ## Architecture & Key Files
@@ -46,11 +47,10 @@ This document provides essential context and instructions for AI agents working 
 - **Surgical Updates:** When modifying `server.js` or `html/cms.ejs`, ensure that existing functionalities like the "Home" page deletion protection or the first-user-is-admin logic are preserved.
 - **Style:** Adhere to the existing modular CSS architecture. Use CSS variables defined in `base.css` for consistency.
 - **Markdown:** Use the `marked` library to parse the `text` field in content chunks before rendering.
-- **Admin Access:** API endpoints for CMS operations must be protected by the `checkAdmin` middleware, which validates the `x-admin-status: true` header.
+- **Admin Access:** API endpoints for CMS operations must be protected by the `checkAdmin` middleware, which validates the JWT token (via header or cookie).
 
 ## Future Roadmap
 
-1.  **Session Management:** Transition from `localStorage` flags to secure, server-side session/cookie management.
-2.  **Asset Management:** Implement image and file upload capabilities in the CMS.
-3.  **Testing:** Add a comprehensive test suite for the CMS API and page rendering logic.
-4.  **Database Migration:** Consider moving from JSON files to a formal database for scalability.
+1.  **Asset Management:** Implement image and file upload capabilities in the CMS.
+2.  **Testing:** Add a comprehensive test suite for the CMS API and page rendering logic.
+3.  **Database Migration:** Consider moving from JSON files to a formal database for scalability.

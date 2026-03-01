@@ -82,7 +82,7 @@
 
             const adminHeaders = {
                 'Content-Type': 'application/json',
-                'x-admin-status': 'true'
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             };
 
             function buildTree(pages) {

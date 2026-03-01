@@ -175,10 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const logoutLink = document.getElementById('logout-link');
     if (logoutLink) {
-        logoutLink.addEventListener('click', (e) => {
+        logoutLink.addEventListener('click', async (e) => {
             e.preventDefault();
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (err) {
+                console.error('Logout API failed:', err);
+            }
             localStorage.removeItem('user');
             localStorage.removeItem('isAdmin');
+            localStorage.removeItem('token');
             window.location.href = '/';
         });
     }
@@ -262,10 +268,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
                 if (response.ok) {
-                    localStorage.setItem('user', data.username);
-                    localStorage.setItem('isAdmin', data.admin);
+                    localStorage.setItem('user', data.user.username);
+                    localStorage.setItem('isAdmin', data.user.admin);
+                    localStorage.setItem('token', data.token);
                     closeAuthModal();
-                    updateAuthUI(data.username);
+                    updateAuthUI(data.user.username);
                     window.location.href = '/dashboard';
                 } else {
                     if (loginError) {
