@@ -125,10 +125,18 @@
                     if (node.page) {
                         const actionsEl = document.createElement('div');
                         actionsEl.className = 'node-actions';
-                        actionsEl.innerHTML = `
-                            <button onclick="editPage('${node.page.slug}')">Edit</button>
-                            <button onclick="deletePage('${node.page.slug}')" style="color: red;">Delete</button>
-                        `;
+                        
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = 'Edit';
+                        editBtn.addEventListener('click', () => editPage(node.page.slug));
+                        
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.style.color = 'red';
+                        deleteBtn.addEventListener('click', () => deletePage(node.page.slug));
+                        
+                        actionsEl.appendChild(editBtn);
+                        actionsEl.appendChild(deleteBtn);
                         contentEl.appendChild(actionsEl);
                     }
                     
