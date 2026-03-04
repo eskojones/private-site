@@ -2,20 +2,19 @@
         <nav class="navbar">
             <a href="/" class="logo-link">
                 <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="40" height="40" rx="8" fill="#ff5500"/>
                         <path d="M10 20L20 10L30 20L20 30L10 20Z" fill="white"/>
                     </svg>
-                    <span>Brand</span>
+                    <span>Private Site</span>
                 </div>
             </a>
             <ul class="nav-links" id="dynamic-nav">
                 <!-- Links will be injected here by script.js -->
-                <li id="cms-li" class="hidden"><a href="/cms">CMS</a></li>
-                <li id="auth-li"><a href="#" id="auth-link">Login / Signup</a></li>
-                <li id="logout-li" class="hidden"><a href="#" id="logout-link">Logout</a></li>
             </ul>
             <div class="menu-container">
+                <li id="cms-li" class="hidden" style="list-style: none;"><a href="/cms" class="cta-button-secondary">CMS</a></li>
+                
                 <button id="menu-button" aria-haspopup="true" aria-expanded="false" aria-label="Toggle menu">
                     <div class="hamburger">
                         <span></span>
@@ -24,10 +23,10 @@
                     </div>
                 </button>
                 <ul id="dropdown-menu" class="hidden">
-                    <li><a href="#">Feature A (Coming Soon)</a></li>
-                    <li><a href="#">Feature B (Coming Soon)</a></li>
-                    <li><a href="#">Feature C (Coming Soon)</a></li>
-                    <li><a href="#">Feature D (Coming Soon)</a></li>
+                    <li class="menu-auth-out"><a href="#" id="menu-login">Login</a></li>
+                    <li class="menu-auth-out"><a href="#" id="menu-signup">Signup</a></li>
+                    <li class="menu-auth-in hidden"><a href="/dashboard">Dashboard</a></li>
+                    <li class="menu-auth-in hidden"><a href="#" id="menu-logout">Logout</a></li>
                 </ul>
             </div>
         </nav>

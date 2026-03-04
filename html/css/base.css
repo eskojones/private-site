@@ -1,27 +1,35 @@
 :root {
     --brand-orange: #ff5500;
-    --transition-speed: 0.3s;
-}
-
-/* Light Theme (Default) */
-:root {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --nav-bg: #f8f8f8;
+    --brand-orange-hover: #e64d00;
+    --brand-orange-light: rgba(255, 85, 0, 0.1);
+    --transition-speed: 0.2s;
+    
+    /* Light Theme (Polymarket-inspired) */
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-color: #0f172a;
+    --text-muted: #64748b;
+    --nav-bg: #ffffff;
     --dropdown-bg: #ffffff;
-    --dropdown-border: #e0e0e0;
-    --hover-bg: #f0f0f0;
+    --dropdown-border: #e2e8f0;
+    --hover-bg: #f1f5f9;
+    --border-color: #e2e8f0;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
-/* Dark Theme */
+/* Dark Theme (Polymarket-inspired) */
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-color: #121212;
-        --text-color: #f0f0f0;
-        --nav-bg: #1e1e1e;
-        --dropdown-bg: #2d2d2d;
-        --dropdown-border: #3d3d3d;
-        --hover-bg: #3d3d3d;
+        --bg-color: #0b0e11;
+        --card-bg: #15191e;
+        --text-color: #f8fafc;
+        --text-muted: #94a3b8;
+        --nav-bg: #0b0e11;
+        --dropdown-bg: #1c2128;
+        --dropdown-border: #30363d;
+        --hover-bg: #21262d;
+        --border-color: #30363d;
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
     }
 }
 
@@ -32,14 +40,24 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: var(--bg-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at top, var(--brand-orange-light) 0%, var(--bg-color) 60%), var(--bg-color);
+    background-attachment: fixed;
     color: var(--text-color);
-    transition: background-color var(--transition-speed), color var(--transition-speed);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .hidden {
     display: none !important;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
 .markdown-body {

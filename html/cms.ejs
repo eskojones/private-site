@@ -4,7 +4,7 @@
 <body>
     <%- include('partials/header') %>
 
-    <main>
+    <main class="container">
         <section class="hero">
             <h1>CMS Dashboard</h1>
             <p>Manage your site content and pages.</p>
@@ -54,10 +54,6 @@
                         <button type="submit" class="cta-button">Save Page</button>
                         <button type="button" id="btn-cancel-edit" class="cta-button-secondary">Cancel</button>
                     </div>
-                </form>
-            </div>
-        </section>
-    </main>
                 </form>
             </div>
         </section>
@@ -154,7 +150,13 @@
             }
 
             async function loadPages() {
-                const res = await fetch('/api/nav');
+                const res = await fetch('/api/pages', {
+                    headers: adminHeaders
+                });
+                if (!res.ok) {
+                    alert('Failed to load pages. Please ensure you are logged in as an admin.');
+                    return;
+                }
                 const pages = await res.json();
                 treeContainer.innerHTML = '';
                 const tree = buildTree(pages);

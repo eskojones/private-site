@@ -1,16 +1,16 @@
 .cms-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 0;
 }
 
 #page-editor {
-    border: 1px solid var(--dropdown-border);
-    background-color: var(--dropdown-bg);
-    padding: 2rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    padding: 2.5rem;
     margin-top: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
 }
 
 #cms-form .form-group {
@@ -19,36 +19,43 @@
 
 #cms-form label {
     display: block;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-color);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 #cms-form input[type="text"],
 #cms-form textarea {
     width: 100%;
-    max-width: 600px;
-    padding: 0.75rem;
-    border: 1px solid var(--dropdown-border);
-    border-radius: 6px;
+    max-width: 100%;
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     background-color: var(--bg-color);
     color: var(--text-color);
     font-size: 1rem;
-    transition: border-color var(--transition-speed);
+    transition: all var(--transition-speed);
 }
 
 #cms-form input[type="text"]:focus,
 #cms-form textarea:focus {
     outline: none;
     border-color: var(--brand-orange);
+    box-shadow: 0 0 0 3px var(--brand-orange-light);
 }
 
 #cms-form textarea {
-    max-width: 800px;
-    height: 300px;
-    font-family: monospace;
+    height: 400px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 .cms-actions {
     margin-bottom: 2rem;
+    display: flex;
+    justify-content: flex-end;
 }

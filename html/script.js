@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signup-form');
     const loginForm = document.getElementById('login-form');
 
+    const menuLogin = document.getElementById('menu-login');
+    const menuSignup = document.getElementById('menu-signup');
+    const menuLogout = document.getElementById('menu-logout');
+
     // --- Hamburger Menu Logic ---
     if (menuButton && dropdownMenu) {
         menuButton.addEventListener('click', (event) => {
@@ -50,6 +54,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdownMenu.classList.add('hidden');
             }
         }, 300);
+    }
+
+    if (menuLogin) {
+        menuLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDropdown();
+            if (loginFormContainer) loginFormContainer.classList.remove('hidden');
+            if (signupFormContainer) signupFormContainer.classList.add('hidden');
+            openAuthModal();
+        });
+    }
+
+    if (menuSignup) {
+        menuSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDropdown();
+            if (loginFormContainer) loginFormContainer.classList.add('hidden');
+            if (signupFormContainer) signupFormContainer.classList.remove('hidden');
+            openAuthModal();
+        });
     }
 
     // --- Auth Modal Logic ---
@@ -119,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const logoutLi = document.getElementById('logout-li');
             const cmsLi = document.getElementById('cms-li');
             
-            // Clear current links but keep auth-related ones
+            // Clear only dynamic links, keep static ones
             navContainer.innerHTML = '';
             
             navItems.forEach(item => {
@@ -134,10 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 navContainer.appendChild(li);
             });
             
-            if (cmsLi) navContainer.appendChild(cmsLi);
-            navContainer.appendChild(authLi);
-            navContainer.appendChild(logoutLi);
-            
             // Refresh UI status
             const user = localStorage.getItem('user');
             updateAuthUI(user);
@@ -149,44 +169,47 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Authentication Logic ---
     function updateAuthUI(username) {
         const dynamicLinks = document.querySelectorAll('.dynamic-page-link');
-        const logoutLi = document.getElementById('logout-li');
         const cmsLi = document.getElementById('cms-li');
-        const authLink = document.getElementById('auth-link');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+        const menuAuthIn = document.querySelectorAll('.menu-auth-in');
+        const menuAuthOut = document.querySelectorAll('.menu-auth-out');
+
         if (username) {
-            if (authLink) {
-                authLink.textContent = `Hello, ${username}`;
-                authLink.href = '/dashboard';
-            }
             dynamicLinks.forEach(link => link.classList.add('hidden'));
-            if (logoutLi) logoutLi.classList.remove('hidden');
             if (cmsLi && isAdmin) cmsLi.classList.remove('hidden');
+
+            menuAuthIn.forEach(item => item.classList.remove('hidden'));
+            menuAuthOut.forEach(item => item.classList.add('hidden'));
         } else {
-            if (authLink) {
-                authLink.textContent = 'Login / Signup';
-                authLink.href = '#';
-            }
             dynamicLinks.forEach(link => link.classList.remove('hidden'));
-            if (logoutLi) logoutLi.classList.add('hidden');
             if (cmsLi) cmsLi.classList.add('hidden');
+
+            menuAuthIn.forEach(item => item.classList.add('hidden'));
+            menuAuthOut.forEach(item => item.classList.remove('hidden'));
         }
+    }
+
+    async function handleLogout(e) {
+        if (e) e.preventDefault();
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+        } catch (err) {
+            console.error('Logout API failed:', err);
+        }
+        localStorage.removeItem('user');
+        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('token');
+        window.location.href = '/';
     }
 
     const logoutLink = document.getElementById('logout-link');
     if (logoutLink) {
-        logoutLink.addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await fetch('/api/logout', { method: 'POST' });
-            } catch (err) {
-                console.error('Logout API failed:', err);
-            }
-            localStorage.removeItem('user');
-            localStorage.removeItem('isAdmin');
-            localStorage.removeItem('token');
-            window.location.href = '/';
-        });
+        logoutLink.addEventListener('click', handleLogout);
+    }
+    
+    if (menuLogout) {
+        menuLogout.addEventListener('click', handleLogout);
     }
 
     // Dashboard-specific logic

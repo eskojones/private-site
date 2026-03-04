@@ -128,6 +128,30 @@ app.get('/api/nav', async (req, res) => {
     }
 });
 
+// API to get ALL pages (Admin only)
+app.get('/api/pages', checkAdmin, async (req, res) => {
+    try {
+        const files = await fs.readdir(PAGES_DIR);
+        const pages = [];
+        
+        for (const file of files) {
+            if (file.endsWith('.json')) {
+                const content = JSON.parse(await fs.readFile(path.join(PAGES_DIR, file), 'utf8'));
+                pages.push({ 
+                    slug: content.slug, 
+                    title: content.title,
+                    isPublic: content.isPublic !== false,
+                    showInNav: content.showInNav !== false
+                });
+            }
+        }
+        res.json(pages);
+    } catch (err) {
+        console.error('Error fetching pages:', err);
+        res.status(500).json({ error: 'Failed to fetch pages' });
+    }
+});
+
 // CMS API Endpoints
 app.get('/api/pages/:slug', checkAdmin, async (req, res) => {
     const slug = sanitizeSlug(req.params.slug);
